@@ -12,34 +12,37 @@ tape('send clock', function (t) {
   var s2 = b.createStream({readable: false, sendClock: true})
 
   s1.pipe(s2).pipe(s1)
-  s1.resume(); s2.resume()
 
   a.set('foo', 'bar')
-  console.log(b.get('foo'))
+  setTimeout(function() {
+    console.log(b.get('foo'))
 
-  t.equal(b.get('foo'), 'bar')
+    t.equal(b.get('foo'), 'bar')
 
-  b.set('foo', 'baz')
+    b.set('foo', 'baz')
+    setTimeout(function() {
+      //b has changed locally
+      t.equal(b.get('foo'), 'baz')
+      //a has NOT changed
+      t.equal(a.get('foo'), 'bar')
 
-  //b has changed locally
-  t.equal(b.get('foo'), 'baz')
-  //a has NOT changed
-  t.equal(a.get('foo'), 'bar')
+      //set a again
+      a.set('foo', 'bar')
+      setTimeout(function() {
+        //b has changed locally
+        t.equal(b.get('foo'), 'bar')
 
-  //set a again
-  a.set('foo', 'bar')
+        var s3 = b.createStream({writable: false, sendClock: true})
+        var s4 = c.createStream({readable: false, sendClock: true})
 
-  //b has changed locally
-  t.equal(b.get('foo'), 'bar')
+        s3.pipe(s4).pipe(s3)
 
-  var s3 = b.createStream({writable: false, sendClock: true})
-  var s4 = c.createStream({readable: false, sendClock: true})
+        setTimeout(function() {
+          t.equal(b.get('foo'), 'bar')
 
-  s3.pipe(s4).pipe(s3)
-
-  s3.resume(); s4.resume()
-
-  t.equal(b.get('foo'), 'bar')
-  
-  t.end()
+          t.end()
+        }, 10)
+      }, 10)
+    }, 10)
+  }, 10)
 })

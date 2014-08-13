@@ -20,7 +20,7 @@ test('updates appear in histroy', function (g, t) {
   var source = 'source' //gossip.createID()
   var ts = timestamp()
 
-  
+
   t.equal(g._update([[key, value], ts, source])
     , true
     , 'update returns true to indicate was not old')
@@ -29,13 +29,13 @@ test('updates appear in histroy', function (g, t) {
   t.equal(g.get(key), value)
 
   t.deepEqual(g.history(), [[['key', value], ts, source]])
- 
+
   var value2 = Math.random()
   //older timestamps are not appled.
   t.equal(g._update([[key, value2], ts - 1, source])
     , false
     , 'write returns false to indicate update did not apply')
-  
+
   //the second update was older, so must not be in the history
   t.deepEqual(g.history(), [[['key', value], ts, source]])
 
@@ -72,13 +72,13 @@ test('can filter histroy with {sources: timestamps}', function (g, t) {
     , [[['B', 'bbb'], ts, B]])
 
   //if an item is not available, it
- 
+
   filter[C] = null
    t.deepEqual(
     g.history(filter)
     , [ [['B', 'bbb'], ts, B]
       , [['C', 'ccc'], ts, C]])
-  
+
   t.end()
 })
 

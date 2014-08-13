@@ -15,8 +15,6 @@ function sync(g, h) {
     console.log(g.id, 'key', g.get('key'))
   })
   s.pipe(r).pipe(s)
-  s.resume()
-  r.resume()
 }
 
 sync(g1, g2)
@@ -27,8 +25,10 @@ var value = Math.random()
 
 g1.set('key', value)
 
-t.equal(g3.get('key'), g1.get('key'))
-t.equal(g2.get('key'), g1.get('key'))
+setTimeout(function() {
+  t.equal(g3.get('key'), g1.get('key'))
+  t.equal(g2.get('key'), g1.get('key'))
 
-t.end()
+  t.end()
+}, 0)
 })

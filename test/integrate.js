@@ -14,8 +14,8 @@ s2.on('data', function (d) { console.log("s2", d)})
 
 //I like to have streams that work sync.
 //if you can do that, you know it's tight.
-s1.resume()
-s2.resume()
+//s1.0resume()
+//s2.resume()
 
 //process.nextTick(function () {
 
@@ -23,6 +23,8 @@ var value = Math.random()
 
 g1.set('key', value)
 
-t.equal(g2.get('key'), g1.get('key'))
-t.end()
+setTimeout(function() {
+  t.equal(g2.get('key'), g1.get('key'))
+  t.end()
+}, 0)
 })

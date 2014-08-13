@@ -18,10 +18,12 @@ a.createReadStream(/*{wrapper: 'raw'}*/)
   .pipe(es.writeArray(function (_, ary) {
     es.from(ary).pipe(b.createWriteStream(/*{wrapper: 'raw'}*/))
     .on('close', mac(function () {
-      t.deepEqual(a.history(), b.history())
-      t.end()
+      setTimeout(function() {
+        t.deepEqual(a.history(), b.history())
+        t.end()
 
-      console.log('ARY', b.history())
+        console.log('ARY', b.history())
+      }, 10)
     }).once())
   }))
 
@@ -34,6 +36,8 @@ while(l--) {
   a.emit('message', 'hello_' + new Date())
 }
 
-a.dispose() //end all streams
+setTimeout(function() {
+  a.dispose() //end all streams
+}, 10)
 
 })

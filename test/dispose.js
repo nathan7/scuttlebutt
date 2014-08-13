@@ -24,7 +24,7 @@ var s = emitter.createReadStream({tail: true})
     console.log(ary)
     ended = true
   }))
-  
+
 emitter.emit('message', 'hello')
 emitter.emit('message', 'hello')
 
@@ -35,8 +35,10 @@ emitter.on('dispose', function () {
 process.nextTick(function () {
   console.log('dispose')
   emitter.dispose()
-  t.ok(ended, 'dispose must trigger end on all streams')
-  t.end()
+  setTimeout(function() {
+    t.ok(ended, 'dispose must trigger end on all streams')
+    t.end()
+  }, 10)
 })
 
 })

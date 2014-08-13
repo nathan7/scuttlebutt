@@ -1,0 +1,17 @@
+digraph finite_state_machine {
+  rankdir = LR;
+  size = "8,5"
+
+  node [shape = circle];
+
+  tx_fresh -> tx_syncing [ label = "rx_header" ];
+  tx_syncing -> tx_syncing;
+  tx_syncing -> tx;
+  tx -> tx [ label = "update" ];
+
+  rx_fresh -> rx_syncing [ label = "rx_header" ];
+  rx_syncing -> rx_syncing [ label = "rx_update" ];
+  rx_syncing -> rx [ label = "rx_sync" ];
+
+  rx -> rx [ label = "rx_update" ];
+}
