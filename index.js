@@ -5,6 +5,7 @@ var EventEmitter = require('events').EventEmitter
   , u = require('./util')
   , timestamp = require('monotonic-timestamp')
   , Duplex = require('stream').Duplex
+  , debug = require('debug')('scuttlebutt')
 
 function dutyOfSubclass() {
   throw new Error('method must be implemented by subclass')
@@ -154,19 +155,19 @@ function ScuttlebuttStream(scuttlebutt, opts) { var self = this
   })
 
   function dispose() {
-    console.log(self._obj.id, 'DISPOSE')
+    debug(self._obj.id, 'DISPOSE')
     self.end()
   }
 }
 
-ScuttlebuttStream.prototype.push = function(data) {
-  console.log(this._obj.id, 'tx', this.rxState, this.txState, data)
+if (debug.enabled) ScuttlebuttStream.prototype.push = function(data) {
+  debug(this._obj.id, 'tx', this.rxState, this.txState, data)
   return Duplex.prototype.push.apply(this, arguments)
 }
 
 // rx_update
 ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
-  console.log(this._obj.id, 'rx', this.rxState, this.txState, data)
+  debug(this._obj.id, 'rx', this.rxState, this.txState, data)
 
   if (this.rxState === RX_FRESH) {
     if ( !data
@@ -175,11 +176,11 @@ ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
       || typeof data.clock != 'object'
        ) return cb(new TypeError('invalid handshake'))
 
-    console.log(this._obj.id, this.rxState = RX_SYNCING, this.txState)
+    debug(this._obj.id, this.rxState = RX_SYNCING, this.txState)
     emit.call(this, 'header', data)
 
     if (this.readable) {
-      console.log(this._obj.id, this.rxState, this.txState = TX_SYNCING)
+      debug(this._obj.id, this.rxState, this.txState = TX_SYNCING)
 
       var sources = data.clock
 
@@ -187,7 +188,7 @@ ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
         .history(sources)
         .forEach(this._send, this)
 
-      console.log(this._obj.id, this.rxState, this.txState = TX)
+      debug(this._obj.id, this.rxState, this.txState = TX)
 
       if (this.writable) {
         this.push('SYNC')
@@ -195,7 +196,7 @@ ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
       }
 
       this._obj.on('_update', this._onUpdate = function(update) {
-        console.log(self._obj.id, self.rxState, self.txState, '_update', update)
+        debug(self._obj.id, self.rxState, self.txState, '_update', update)
         if (!u.filter(update, self.sources)) return
         self._send(update)
       })
@@ -205,7 +206,7 @@ ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
     if (data !== 'SYNC')
       return this._receive(data, cb)
     else {
-      console.log(this._obj.id, this.rxState = RX, this.txState)
+      debug(this._obj.id, this.rxState = RX, this.txState)
 
       emit.call(this, 'sync')
       emit.call(this, 'synced')
@@ -218,7 +219,7 @@ ScuttlebuttStream.prototype._write = function(data, _, cb) { var self = this
 }
 
 ScuttlebuttStream.prototype._receive = function(data, cb) {
-  console.log(this._obj.id, 'rx_update', this.rxState, this.txState, data)
+  debug(this._obj.id, 'rx_update', this.rxState, this.txState, data)
 
   if (validate(data)) {
     this._obj._update(data)

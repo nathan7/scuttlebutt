@@ -9,10 +9,11 @@
     "url": "git://github.com/dominictarr/scuttlebutt.git"
   },
   "dependencies": {
-    "iterate": "0.1.0",
+    "debug": "^1.0.4",
     "duplex": "~1.0.0",
-    "stream-serializer": "1.1.2",
-    "monotonic-timestamp": "~0.0.8"
+    "iterate": "0.1.0",
+    "monotonic-timestamp": "~0.0.8",
+    "stream-serializer": "1.1.2"
   },
   "devDependencies": {
     "macgyver": "~1.10",
